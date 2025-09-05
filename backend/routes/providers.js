@@ -2,40 +2,93 @@ const express = require('express');
 const router = express.Router();
 const Provider = require('../models/Provider');
 const generateSlots = require('../lib/generateSlotsForRange');
+const { asyncHandler, createNotFoundError } = require('../middleware/errorHandler');
+const { validateBody, providerSchema, scheduleConfigSchema, isValidObjectId } = require('../utils/validation');
 
+// List all providers
+router.get('/', asyncHandler(async (req, res) => {
+  const providers = await Provider.find().lean();
+  res.json({
+    success: true,
+    count: providers.length,
+    data: providers
+  });
+}));
 
-// list providers
-router.get('/', async (req, res) => {
-  const all = await Provider.find().lean();
-  res.json(all);
-});
-
-// Create a provider (simple)
-router.post('/', async (req, res) => {
+// Create a new provider
+router.post('/', validateBody(providerSchema), asyncHandler(async (req, res) => {
   const { name, email, scheduleConfig } = req.body;
-  const p = await Provider.create({ name, email, scheduleConfig });
-  res.json(p);
-});
+  
+  const provider = await Provider.create({ 
+    name, 
+    email, 
+    scheduleConfig: scheduleConfig || {} 
+  });
+  
+  res.status(201).json({
+    success: true,
+    data: provider
+  });
+}));
 
-// Update schedule config (replace)
-router.put('/:id/config', async (req, res) => {
-  const id = req.params.id;
-  const config = req.body;
-  const p = await Provider.findByIdAndUpdate(id, { scheduleConfig: config }, { new: true });
-  if (!p) return res.status(404).send('provider not found');
-  res.json(p);
-});
+// Update provider schedule configuration
+router.put('/:id/config', validateBody(scheduleConfigSchema), asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  
+  if (!isValidObjectId(id)) {
+    throw createNotFoundError('Provider');
+  }
+  
+  const provider = await Provider.findByIdAndUpdate(
+    id, 
+    { scheduleConfig: req.body }, 
+    { new: true, runValidators: true }
+  );
+  
+  if (!provider) {
+    throw createNotFoundError('Provider');
+  }
+  
+  res.json({
+    success: true,
+    data: provider
+  });
+}));
 
-// Get availability (generate slots in memory + attach bookings)
-router.get('/:id/availability', async (req, res) => {
-  const id = req.params.id;
-  const from = req.query.from; // ISO UTC
-  const to = req.query.to;     // ISO UTC
-  if (!from || !to) return res.status(400).send('from & to required (ISO UTC)');
+// Get provider availability slots
+router.get('/:id/availability', asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { from, to } = req.query;
+  
+  if (!isValidObjectId(id)) {
+    throw createNotFoundError('Provider');
+  }
+  
+  if (!from || !to) {
+    const error = new Error('Query parameters "from" and "to" are required (ISO UTC format)');
+    error.statusCode = 400;
+    throw error;
+  }
+  
   const provider = await Provider.findById(id);
-  if (!provider) return res.status(404).send('provider not found');
+  if (!provider) {
+    throw createNotFoundError('Provider');
+  }
+  
   const slots = await generateSlots(provider, from, to);
-  res.json({ provider: { _id: provider._id, name: provider.name }, slots });
-});
+  
+  res.json({
+    success: true,
+    data: {
+      provider: {
+        _id: provider._id,
+        name: provider.name
+      },
+      slots,
+      totalSlots: slots.length,
+      availableSlots: slots.filter(s => !s.isBooked).length
+    }
+  });
+}));
 
 module.exports = router;
