@@ -96,10 +96,13 @@ mongoose.connect(MONGODB_URI, {
     server.close(() => {
       logger.info('HTTP server closed');
       
-      mongoose.connection.close(false, () => {
+      mongoose.connection.close(false).then(() => {
         logger.info('MongoDB connection closed');
         logger.info('Application shutdown complete');
         process.exit(0);
+      }).catch((err) => {
+        logger.error('Error closing MongoDB connection', { error: err.message });
+        process.exit(1);
       });
     });
     

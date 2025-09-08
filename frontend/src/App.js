@@ -11,8 +11,8 @@ export default function App() {
     (async () => {
       try {
         const res = await API.get('/providers'); // We'll implement /providers list endpoint shortly
-        setProvidersList(res.data);
-        if (res.data.length > 0) setProvider(res.data[0]);
+        setProvidersList(res.data.data); // API returns {success, count, data: [...]} structure
+        if (res.data.data.length > 0) setProvider(res.data.data[0]);
       } catch (err) {
         console.warn('No providers list endpoint — creating sample provider...');
         // create sample provider
@@ -39,10 +39,10 @@ export default function App() {
         <div style={{ flex: 1 }}>
           <label>Select provider</label>
           <select value={provider?._id || ''} onChange={e => {
-            const p = providersList.find(x => x._id === e.target.value);
+            const p = Array.isArray(providersList) ? providersList.find(x => x._id === e.target.value) : null;
             setProvider(p);
           }}>
-            {providersList.map(p => <option key={p._id} value={p._1d}>{p.name}</option>)}
+            {Array.isArray(providersList) ? providersList.map(p => <option key={p._id} value={p._id}>{p.name}</option>) : null}
           </select>
         </div>
       </div>

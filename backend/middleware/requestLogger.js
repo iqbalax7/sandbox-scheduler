@@ -5,6 +5,7 @@ const logger = require('../utils/logger');
 // Add request ID to all requests
 const requestIdMiddleware = (req, res, next) => {
   req.id = uuidv4();
+  req._requestStartTime = process.hrtime(); // Use custom property to avoid Morgan conflicts
   res.setHeader('X-Request-ID', req.id);
   next();
 };
@@ -14,11 +15,15 @@ morgan.token('id', (req) => req.id);
 
 // Custom token for response time in ms
 morgan.token('response-time-ms', (req, res) => {
-  if (!req._startTime) {
+  if (!req._requestStartTime || !Array.isArray(req._requestStartTime)) {
     return '-';
   }
-  const diff = process.hrtime(req._startTime);
-  return (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(2);
+  try {
+    const diff = process.hrtime(req._requestStartTime);
+    return (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(2);
+  } catch (error) {
+    return '-';
+  }
 });
 
 // Custom morgan format for structured logging
