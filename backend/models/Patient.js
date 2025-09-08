@@ -48,6 +48,22 @@ const PatientSchema = new Schema({
       message: 'Date of birth cannot be in the future'
     }
   },
+  timezone: {
+    type: String,
+    default: 'UTC',
+    validate: {
+      validator: function(tz) {
+        try {
+          // Check if timezone is valid by creating a date with it
+          new Date().toLocaleString('en-US', { timeZone: tz });
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
+      message: 'Invalid timezone identifier'
+    }
+  },
   isActive: {
     type: Boolean,
     default: true
