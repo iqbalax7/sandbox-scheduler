@@ -2,3 +2,16 @@
 {"environment":"development","healthCheck":"http://localhost:4000/health","level":"info","message":"Server started successfully","nodeVersion":"v22.12.0","pid":38807,"port":4000,"timestamp":"2025-09-06 04:40:57:4057"}
 {"database":"mongodb://127.0.0.1:27017/sandbox_scheduler","environment":"development","level":"info","message":"MongoDB connected successfully","timestamp":"2025-09-06 04:41:14:4114"}
 {"environment":"development","healthCheck":"http://localhost:4000/health","level":"info","message":"Server started successfully","nodeVersion":"v22.12.0","pid":38872,"port":4000,"timestamp":"2025-09-06 04:41:14:4114"}
+{"database":"mongodb://127.0.0.1:27017/sandbox_scheduler","environment":"development","level":"info","message":"MongoDB connected successfully","timestamp":"2025-09-06 04:46:27:4627"}
+{"environment":"development","healthCheck":"http://localhost:4000/health","level":"info","message":"Server started successfully","nodeVersion":"v22.12.0","pid":39850,"port":4000,"timestamp":"2025-09-06 04:46:27:4627"}
+{"database":"mongodb://127.0.0.1:27017/sandbox_scheduler","environment":"development","level":"info","message":"MongoDB connected successfully","timestamp":"2025-09-06 04:46:52:4652"}
+{"environment":"development","healthCheck":"http://localhost:4000/health","level":"info","message":"Server started successfully","nodeVersion":"v22.12.0","pid":40035,"port":4000,"timestamp":"2025-09-06 04:46:52:4652"}
+{"database":"mongodb://127.0.0.1:27017/sandbox_scheduler","environment":"development","level":"info","message":"MongoDB connected successfully","timestamp":"2025-09-06 04:47:13:4713"}
+{"environment":"development","healthCheck":"http://localhost:4000/health","level":"info","message":"Server started successfully","nodeVersion":"v22.12.0","pid":40163,"port":4000,"timestamp":"2025-09-06 04:47:13:4713"}
+{"database":"mongodb://127.0.0.1:27017/sandbox_scheduler","environment":"development","level":"info","message":"MongoDB connected successfully","timestamp":"2025-09-06 04:48:07:487"}
+{"environment":"development","healthCheck":"http://localhost:4000/health","level":"info","message":"Server started successfully","nodeVersion":"v22.12.0","pid":40319,"port":4000,"timestamp":"2025-09-06 04:48:07:487"}
+{"database":"mongodb://127.0.0.1:27017/sandbox_scheduler","environment":"development","level":"info","message":"MongoDB connected successfully","timestamp":"2025-09-06 04:49:16:4916"}
+{"environment":"development","healthCheck":"http://localhost:4000/health","level":"info","message":"Server started successfully","nodeVersion":"v22.12.0","pid":40391,"port":4000,"timestamp":"2025-09-06 04:49:16:4916"}
+{"database":"mongodb://127.0.0.1:27017/sandbox_scheduler","environment":"development","level":"info","message":"MongoDB connected successfully","timestamp":"2025-09-06 04:49:34:4934"}
+{"environment":"development","healthCheck":"http://localhost:4000/health","level":"info","message":"Server started successfully","nodeVersion":"v22.12.0","pid":40432,"port":4000,"timestamp":"2025-09-06 04:49:34:4934"}
+{"level":"info","message":"SIGINT received. Shutting down gracefully...","signal":"SIGINT","timestamp":"2025-09-06 04:56:44:5644","uptime":430.812761955}

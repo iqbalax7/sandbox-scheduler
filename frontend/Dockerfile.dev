@@ -1,0 +1,25 @@
+# Development Dockerfile for frontend with hot reloading
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install development dependencies
+RUN apk add --no-cache \
+    dumb-init \
+    git
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies
+RUN npm install
+
+# Expose the application port
+EXPOSE 3000
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the development server with hot reloading
+CMD ["npm", "start"]

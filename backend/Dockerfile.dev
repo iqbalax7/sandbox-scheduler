@@ -1,0 +1,28 @@
+# Development Dockerfile for backend with hot reloading
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install development dependencies including nodemon
+RUN apk add --no-cache \
+    dumb-init \
+    git
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm install
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Expose the application port and debug port
+EXPOSE 4000 9229
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start with nodemon for hot reloading and debugging enabled
+CMD ["npm", "run", "dev", "--", "--inspect=0.0.0.0:9229"]

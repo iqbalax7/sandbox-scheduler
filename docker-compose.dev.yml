@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # MongoDB database (same as production)
+  mongodb:
+    image: mongo:6.0
+    container_name: sandbox-scheduler-mongo-dev
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: sandbox_scheduler_dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_dev_data:/data/db
+    networks:
+      - scheduler-dev-network
+
+  # Backend development service with hot reloading
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: sandbox-scheduler-backend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/sandbox_scheduler_dev?authSource=admin
+    ports:
+      - "4000:4000"
+      - "9229:9229"  # Debug port
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - backend_dev_logs:/app/logs
+    networks:
+      - scheduler-dev-network
+    depends_on:
+      - mongodb
+    command: npm run dev
+
+  # Frontend development service with hot reloading
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: sandbox-scheduler-frontend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      REACT_APP_API_URL: http://localhost:4000
+      CHOKIDAR_USEPOLLING: true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - scheduler-dev-network
+    depends_on:
+      - backend-dev
+    command: npm start
+
+  # Redis for development
+  redis-dev:
+    image: redis:7-alpine
+    container_name: sandbox-scheduler-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - scheduler-dev-network
+
+networks:
+  scheduler-dev-network:
+    driver: bridge
+    name: scheduler-dev-network
+
+volumes:
+  mongodb_dev_data:
+    driver: local
+  backend_dev_logs:
+    driver: local
